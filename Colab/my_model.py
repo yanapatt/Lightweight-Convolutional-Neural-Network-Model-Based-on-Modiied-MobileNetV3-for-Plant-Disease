@@ -13,10 +13,10 @@ from keras.src import layers
 
 '''
     ใช้สำหรับปรับแต่ง Model และเลือกใช้ Model ตามที่ต้องการ หากต้องการเพิ่มหรือลด Model ให้แก้ไขที่นี่
-    Reference: https://github.com/keras-team/keras/blob/v3.5.0/keras/src/applications/mobilenet_v3.py
-                    https://github.com/BBuf/Keras-Semantic-Segmentation/blob/master/Models/MobileNext.py
+    Reference:  https://github.com/keras-team/keras/blob/v3.10.0/keras/src/applications/mobilenet_v3.py
+                https://github.com/BBuf/Keras-Semantic-Segmentation/blob/master/Models/MobileNext.py
 
-    Modify ล่าสุด 24/01/2025
+    Modify ล่าสุด 23/08/2025
 '''
 
 "Activation Function"
@@ -29,7 +29,7 @@ def hard_sigmoid(x):
 def hard_swish(x):
     return layers.Activation("hard_swish")(x)
 
-def _depth(v, divisor=8, min_value=None):
+def depth(v, divisor=8, min_value=None):
     if min_value is None:
         min_value = divisor
     new_v = max(min_value, int(v + divisor / 2) // divisor * divisor)
@@ -39,12 +39,12 @@ def _depth(v, divisor=8, min_value=None):
     return new_v
 
 "Squeeze and Excitation Function"
-def _se_block(inputs, filters, se_ratio, prefix):
+def se_block(inputs, filters, se_ratio, prefix):
     x = layers.GlobalAveragePooling2D(
         keepdims=True, name=prefix + "squeeze_excite_avg_pool"
     )(inputs)
     x = layers.Conv2D(
-        _depth(filters * se_ratio),
+        depth(filters * se_ratio),
         kernel_size=1,
         padding="same",
         name=prefix + "squeeze_excite_conv",
@@ -61,7 +61,7 @@ def _se_block(inputs, filters, se_ratio, prefix):
     return x
 
 "My purpose method"
-def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, activation, block_id, first=False):
+def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, activation, block_id, first=False, use_activation=True):
     '''
         Dwise + Activation => Projection Conv1x1 => Expansion Conv1x1 + Activation => SE (if use) => Dwise
         ฟังก์ชันนี้เป็นการผสมผสานระหว่าง Inverted Resdidual Block ใน MobilenetV3 และ Sandglass Block ใน MobileNeXt
@@ -76,6 +76,7 @@ def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, ac
             activation : Activation function.
             block_id : Unique ID for block (used in naming layers).
             first : Whether this is the first block in the sequence.
+            use_activation : For first block if false activation none
     '''
     channel_axis = 1 if backend.image_data_format() == "channels_first" else -1
     shortcut = x
@@ -109,7 +110,8 @@ def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, ac
         )(x)
         x = activation(x)
     else:
-        x = activation(x)
+        if use_activation:
+            x = activation(x)
 
     #Projection Phase
     if reduction > 1:
@@ -145,7 +147,7 @@ def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, ac
 
     #Squeeze and Excitation
     if se_ratio:
-        x = _se_block(x, outfilters, se_ratio, prefix)
+        x = se_block(x, outfilters, se_ratio, prefix)
 
     #Depthwise Convolution
     if stride == 2:
@@ -193,19 +195,6 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
 
         return model
 
-    elif model_name == "MobileNetV3Large":
-        base_model = keras.applications.MobileNetV3Large(
-            input_shape=input_shape,
-            include_top=False,
-            weights='imagenet',
-        )
-        freeze_layers(base_model)
-        x = layers.GlobalAveragePooling2D(name="avg_pool")(base_model.output)
-        predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
-        model = keras.Model(inputs=base_model.input, outputs=predictions)
-
-        return model
-
     elif model_name == "MobileNetV3SmallMinimalistic":
         base_model = keras.applications.MobileNetV3Small(
             input_shape=input_shape,
@@ -220,34 +209,7 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
 
         return model
 
-    elif model_name == "MobileNetV3LargeMinimalistic":
-        base_model = keras.applications.MobileNetV3Large(
-            input_shape=input_shape,
-            include_top=False,
-            weights='imagenet',
-            minimalistic=True
-        )
-        freeze_layers(base_model)
-        x = layers.GlobalAveragePooling2D(name="avg_pool")(base_model.output)
-        predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
-        model = keras.Model(inputs=base_model.input, outputs=predictions)
-
-        return model
-
-    elif model_name == "MobileNetV2":
-        base_model = keras.applications.MobileNetV2(
-            input_shape=input_shape,
-            include_top=False,
-            weights='imagenet'
-        )
-        freeze_layers(base_model)
-        x = layers.GlobalAveragePooling2D(name="avg_pool")(base_model.output)
-        predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
-        model = keras.Model(inputs=base_model.input, outputs=predictions)
-
-        return model
-
-    elif model_name == "MobileNetV3SmallMinimalistic_Custom":
+    elif model_name == "MobileNetV3SmallMinimalistic_Modify_A":
         base_model = keras.applications.MobileNetV3Small(
             input_shape=input_shape,
             include_top=False,
@@ -259,9 +221,77 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
         name_string = "expanded_conv_8_depthwise_bn"
 
         x = base_model.get_layer(name_string).output
-        x = sandglass_modify(x, outfilters=_depth(288, 8), reduction=3, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=1, first=True)
-        x = sandglass_modify(x, outfilters=_depth(576, 8), reduction=3, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=2)
-        x = sandglass_modify(x, outfilters=_depth(576, 8), reduction=6, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=3)
+        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=3, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=1, first=True, use_activation=True)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=2)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=3)
+
+        x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
+        predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
+        model = keras.Model(inputs=base_model.input, outputs=predictions)
+
+        return model
+    
+    elif model_name == "MobileNetV3SmallMinimalistic_Modify_B":
+        base_model = keras.applications.MobileNetV3Small(
+            input_shape=input_shape,
+            include_top=False,
+            weights='imagenet',
+            minimalistic=True
+        )
+        freeze_layers(base_model)
+
+        name_string = "expanded_conv_8_project_bn"
+
+        x = base_model.get_layer(name_string).output
+        # Without reduction phase for first block
+        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=0, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=1, first=True, use_activation=False)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=2)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=3, stride=1, se_ratio=None, activation=relu, block_id=3)
+
+        x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
+        predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
+        model = keras.Model(inputs=base_model.input, outputs=predictions)
+
+        return model
+
+    elif model_name == "MobileNetV3Small_Modify_A":
+        base_model = keras.applications.MobileNetV3Small(
+            input_shape=input_shape,
+            include_top=False,
+            weights='imagenet'
+        )
+        freeze_layers(base_model)
+
+        name_string = "expanded_conv_8_depthwise_bn"
+
+        x = base_model.get_layer(name_string).output
+
+        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=1, first=True, use_activation=True)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=2)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=3)
+
+        x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
+        predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
+        model = keras.Model(inputs=base_model.input, outputs=predictions)
+
+        return model
+
+    elif model_name == "MobileNetV3Small_Modify_B":
+        base_model = keras.applications.MobileNetV3Small(
+            input_shape=input_shape,
+            include_top=False,
+            weights='imagenet'
+        )
+        freeze_layers(base_model)
+
+        name_string = "expanded_conv_8_project_bn"
+
+        x = base_model.get_layer(name_string).output
+
+        # Without reduction phase for first block
+        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=0, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=1, first=True, use_activation=False)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=2)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=3)
 
         x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
         predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
@@ -270,5 +300,4 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
         return model
 
     else:
-        raise ValueError(f"Model '{model_name}' is not recognized. Please choose from: MobileNetV3Small, MobileNetV3Large, "
-                         "MobileNetV3SmallMinimalistic, MobileNetV3LargeMinimalistic, MobileNetV2, MobileNetV3SmallMinimalistic_Custom.")
+        raise ValueError(f"Model '{model_name}' is not recognized.")
