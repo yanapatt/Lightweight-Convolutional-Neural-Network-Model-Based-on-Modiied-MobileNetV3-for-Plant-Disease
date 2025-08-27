@@ -292,7 +292,7 @@ def visualize_images(df, count_img=25, nrows=5, ncols=5, title="Title",
 
     plt.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.95)
     plt.tight_layout(rect=[0, 0, 0, 0])
-    plt.savefig(f"{paths}/Visualize_Images.png", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/Visualize_Images.png", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 def visualize_images_by_class(df, nrows=3, ncols=5, title="Title", fontsize=25,
@@ -325,7 +325,7 @@ def visualize_images_by_class(df, nrows=3, ncols=5, title="Title", fontsize=25,
     plt.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.95)
     plt.tight_layout(rect=[0, 0, 0, 0])
 
-    plt.savefig(f"{paths}/Visualize_Images_By_Class", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/Visualize_Images_By_Class", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 def preview_augmented_images(df, nrows=2, ncols=4, index=0, title="Augmentation Sample",
@@ -383,7 +383,7 @@ def preview_augmented_images(df, nrows=2, ncols=4, index=0, title="Augmentation 
 
     plt.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.95, wspace=0.1, hspace=-0.4)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
-    plt.savefig(f"{paths}/Augmentation_Sample", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/Augmentation_Sample", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 "ฟังก์ชันสำหรับทำงานกับโมเดลโดยเฉพาะ"
@@ -501,7 +501,7 @@ def tr_plot(tr_data, start_epoch, fontsize=16, fontname="OPTITimes-Roman", paths
     plt.tick_params(axis='both', labelsize=fontsize)
     plt.tight_layout
 
-    plt.savefig(f"{paths}/Train_Val_Graph", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/Train_Val_Graph", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 def tr_plot_no_best_epoch(tr_data, start_epoch, fontsize=16, fontname="OPTITimes-Roman", paths='img'):
@@ -548,7 +548,7 @@ def tr_plot_no_best_epoch(tr_data, start_epoch, fontsize=16, fontname="OPTITimes
     plt.tick_params(axis='both', labelsize=fontsize)
     plt.tight_layout
 
-    plt.savefig(f"{paths}/Train_Val_Graph_No_Best", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/Train_Val_Graph_No_Best", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 def lr_plot(tracker, history, fontsize=16 , fontname="OPTITimes-Roman", paths="/img"):
@@ -568,7 +568,7 @@ def lr_plot(tracker, history, fontsize=16 , fontname="OPTITimes-Roman", paths="/
     plt.tight_layout()
 
     plt.legend()
-    plt.savefig(f"{paths}/LearningRate_Graph", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/LearningRate_Graph", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 def plot_roc_curve(y_test, predicted, fontsize=16, fontname="OPTITimes-Roman", paths="/img"):
@@ -595,7 +595,7 @@ def plot_roc_curve(y_test, predicted, fontsize=16, fontname="OPTITimes-Roman", p
     plt.legend(loc='lower right', fontsize=fontsize-4)
 
     plt.tight_layout()
-    plt.savefig(f"{paths}/ROC_Curve", bbox_inches='tight', format='png', dpi=300)
+    plt.savefig(f"{paths}/ROC_Curve", bbox_inches='tight', format='svg', dpi=300)
     plt.show()
 
 def plot_confusion_matrix(cm, target_names, title='Confusion matrix', cmap=None, normalize=False, fontsize=18, fontname="OPTITimes-Roman", paths="/img"):
@@ -661,8 +661,8 @@ def plot_confusion_matrix(cm, target_names, title='Confusion matrix', cmap=None,
     plt.style.use('default')
 
     if normalize:
-        plt.savefig(f"{paths}/Confusion_Matrix_Normalize", bbox_inches='tight', format='png', dpi=300)
+        plt.savefig(f"{paths}/Confusion_Matrix_Normalize", bbox_inches='tight', format='svg', dpi=300)
     else:
-        plt.savefig(f"{paths}/Confusion_Matrix", bbox_inches='tight', format='png', dpi=300)
+        plt.savefig(f"{paths}/Confusion_Matrix", bbox_inches='tight', format='svg', dpi=300)
 
     plt.show()

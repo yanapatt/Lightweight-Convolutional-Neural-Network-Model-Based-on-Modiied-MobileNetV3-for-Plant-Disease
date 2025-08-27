@@ -291,7 +291,7 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
         # Without reduction phase for first block
         x = sandglass_modify(x, outfilters=depth(288, 8), reduction=0, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=1, first=True, use_activation=False)
         x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=2)
-        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=3)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=None, activation=hard_swish, block_id=3)
 
         x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
         predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
