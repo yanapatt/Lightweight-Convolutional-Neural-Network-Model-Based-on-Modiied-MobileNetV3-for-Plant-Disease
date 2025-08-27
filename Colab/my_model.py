@@ -145,10 +145,6 @@ def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, ac
     )(x)
     x = activation(x)
 
-    #Squeeze and Excitation
-    if se_ratio:
-        x = se_block(x, outfilters, se_ratio, prefix)
-
     #Depthwise Convolution
     if stride == 2:
         x = layers.ZeroPadding2D(
@@ -167,6 +163,10 @@ def sandglass_modify(x, outfilters, reduction, kernel_size, stride, se_ratio, ac
         momentum=MOMENTUM_BN,
         name=prefix + "depthwise_1_bn"
     )(x)
+
+    #Squeeze and Excitation
+    if se_ratio:
+        x = se_block(x, outfilters, se_ratio, prefix)
 
     if stride == 1 and infilters == outfilters:
         x = layers.Add(name=prefix + "add")([shortcut, x])
