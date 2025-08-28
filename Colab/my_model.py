@@ -266,7 +266,11 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
 
         x = base_model.get_layer(name_string).output
 
-        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=1, first=True, use_activation=True)
+        #Fixed bias for se-block
+        x = hard_swish(x)
+        x = se_block(x, filters=depth(288, 8), se_ratio=0.25, prefix="expanded_conv_8_")
+        
+        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=3, kernel_size=5, stride=1, se_ratio=None, activation=hard_swish, block_id=1, first=True, use_activation=False)
         x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=2)
         x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=3)
 
@@ -287,11 +291,10 @@ def build_model(model_name, input_shape=(224, 224, 3), num_classes=1000):
         name_string = "expanded_conv_8_project_bn"
 
         x = base_model.get_layer(name_string).output
-
         # Without reduction phase for first block
-        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=0, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=1, first=True, use_activation=False)
+        x = sandglass_modify(x, outfilters=depth(288, 8), reduction=0, kernel_size=5, stride=1, se_ratio=None, activation=hard_swish, block_id=1, first=True, use_activation=False)
         x = sandglass_modify(x, outfilters=depth(576, 8), reduction=3, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=2)
-        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=None, activation=hard_swish, block_id=3)
+        x = sandglass_modify(x, outfilters=depth(576, 8), reduction=6, kernel_size=5, stride=1, se_ratio=0.25, activation=hard_swish, block_id=3)
 
         x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
         predictions = layers.Dense(num_classes, activation='softmax', name='Predictions')(x)
