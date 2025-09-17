@@ -15,6 +15,8 @@ All jupyter notebook file in this project using Tensorflow version 2.19.0, Keras
 | 5     | MobileNetV3 Small Minimalistic Modify A                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Mini_Modify_A">Click here</a>  |
 | 6     | MobileNetV3 Small Minimalistic Modify B                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Mini_Modify_B">Click here</a>  |
 | 7     | Preprocess images, helper function and model config file                               | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab">Click here</a>  |
+| 8     | Dataset index setting                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/DatasetSetting">Click here</a>  |
+| 9     | Model weight files                               | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/modelTest2">Click here</a>  |
 ## **Result**
 | Model                                      | #Params   | Dataset       | Test Accuracy % | Test Loss |
 |--------------------------------------------|-----------|---------------|-----------------|-----------|
