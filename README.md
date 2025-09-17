@@ -5,6 +5,16 @@ All jupyter notebook file in this project using Tensorflow version 2.19.0, Keras
 * PlantVillage dataset: <a href="https://www.kaggle.com/datasets/emmarex/plantdisease">Click here</a>
 * Apple dataset: <a href="https://www.kaggle.com/competitions/plant-pathology-2020-fgvc7/data">Click here</a> 
 * Maize and Rice dataset: <a href="https://data.mendeley.com/datasets/6nv7gt2636/1">Click here</a>
+## **Table of notebook**
+| No    | Folder Name                                    | Link      |
+|-------|----------------------------------------------|-----------|
+| 1     | MobileNetV3 Small                    | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S">Click here</a>  |
+| 2     | MobileNetV3 Small Minimalistic                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Mini">Click here</a>  |
+| 3     | MobileNetV3 Small Modify A                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Modify_A">Click here</a>  |
+| 4     | MobileNetV3 Small Modify B                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Modify_B">Click here</a>  |
+| 5     | MobileNetV3 Small Minimalistic Modify A                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Mini_Modify_A">Click here</a>  |
+| 6     | MobileNetV3 Small Minimalistic Modify B                                | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab/MBNv3S_Mini_Modify_B">Click here</a>  |
+| 7     | Preprocess images, helper function and model config file                               | <a href="https://github.com/yanapatt/Lightweight-Convolutional-Neural-Network-Model-Based-on-Modiied-MobileNetV3-for-Plant-Disease/tree/main/Colab">Click here</a>  |
 ## **Result**
 | Model                                      | #Params   | Dataset       | Test Accuracy % | Test Loss |
 |--------------------------------------------|-----------|---------------|-----------------|-----------|
